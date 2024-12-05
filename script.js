@@ -6,15 +6,15 @@ canvas.width = 800;
 canvas.height = 400;
 
 // Game variables
-let player = { x: 50, y: 350, width: 50, height: 50, dx: 0, dy: 0, speed: 5 };
+let player = { x: 50, y: 350, width: 50, height: 50, speed: 5 };
 let hearts = [];
 let obstacles = [];
 let score = 0;
 let level = 1;
 let gameOver = false;
 
-// Controls
-const keys = { left: false, right: false, up: false, down: false };
+// Touch target variables
+let touchTarget = null;
 
 // Load images
 const playerImage = new Image();
@@ -24,20 +24,21 @@ heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite
 const obstacleImage = new Image();
 obstacleImage.src = 'https://files.catbox.moe/j4mdih.png'; // Obstacle sprite
 
-// Listen for key presses
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft') keys.left = true;
-  if (e.key === 'ArrowRight') keys.right = true;
-  if (e.key === 'ArrowUp') keys.up = true;
-  if (e.key === 'ArrowDown') keys.down = true;
+// Add touch event listeners
+canvas.addEventListener('touchstart', handleTouch);
+canvas.addEventListener('touchmove', handleTouch);
+canvas.addEventListener('touchend', () => {
+  touchTarget = null; // Stop moving when touch ends
 });
 
-document.addEventListener('keyup', (e) => {
-  if (e.key === 'ArrowLeft') keys.left = false;
-  if (e.key === 'ArrowRight') keys.right = false;
-  if (e.key === 'ArrowUp') keys.up = false;
-  if (e.key === 'ArrowDown') keys.down = false;
-});
+function handleTouch(event) {
+  const touch = event.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  touchTarget = {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top,
+  };
+}
 
 // Heart and obstacle creation
 function createHeart() {
@@ -45,7 +46,7 @@ function createHeart() {
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height / 2,
     width: 30,
-    height: 30
+    height: 30,
   });
 }
 
@@ -55,16 +56,26 @@ function createObstacle() {
     y: Math.random() * canvas.height / 2,
     width: 30,
     height: 30,
-    speed: 2 + Math.random() * 2 * level // Increase speed with levels
+    speed: 2 + Math.random() * 2 * level, // Increase speed with levels
   });
 }
 
 // Update player position
 function updatePlayer() {
-  if (keys.left) player.x -= player.speed;
-  if (keys.right) player.x += player.speed;
-  if (keys.up) player.y -= player.speed;
-  if (keys.down) player.y += player.speed;
+  if (touchTarget) {
+    // Move towards the touch target
+    const dx = touchTarget.x - (player.x + player.width / 2);
+    const dy = touchTarget.y - (player.y + player.height / 2);
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > player.speed) {
+      player.x += (dx / distance) * player.speed;
+      player.y += (dy / distance) * player.speed;
+    } else {
+      player.x = touchTarget.x - player.width / 2;
+      player.y = touchTarget.y - player.height / 2;
+    }
+  }
 
   // Boundary check
   if (player.x < 0) player.x = 0;
