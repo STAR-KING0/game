@@ -8,13 +8,12 @@ let bombsToSpawn = 0;
 let activePositions = [];
 
 // Function to create a bubble or bomb
-function createItem() {
-  const isBomb = bombsToSpawn > 0; // Spawn a bomb if bombsToSpawn > 0
+function createItem(isBomb = false) {
   const item = document.createElement("div");
   item.classList.add(isBomb ? "bomb" : "bubble");
 
   // Random size
-  const size = Math.random() * 50 + 30; // Between 30 and 80px
+  const size = Math.random() * 50 + 40; // Between 40 and 90px
   item.style.width = `${size}px`;
   item.style.height = `${size}px`;
 
@@ -26,11 +25,11 @@ function createItem() {
   activePositions.push({ left: leftPosition, size });
   item.style.left = `${leftPosition}px`;
 
-  // Start at the bottom
-  item.style.bottom = `-80px`;
+  // Start at the top
+  item.style.top = `-80px`;
 
   // Set random animation duration
-  item.style.animationDuration = `${Math.random() * 3 + 2}s`; // 2 to 5 seconds
+  item.style.animationDuration = `${Math.random() * 3 + 3}s`; // 3 to 6 seconds
 
   // Click behavior
   item.addEventListener("click", () => {
@@ -46,7 +45,7 @@ function createItem() {
     checkForBombSpawn(); // Check if it's time to spawn bombs
   });
 
-  // Remove item when it reaches the top
+  // Remove item when it reaches the bottom
   item.addEventListener("animationend", () => {
     item.remove();
     clearPosition(leftPosition, size); // Clear the position
