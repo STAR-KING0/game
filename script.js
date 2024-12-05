@@ -23,6 +23,8 @@ const heartImage = new Image();
 heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite
 const obstacleImage = new Image();
 obstacleImage.src = 'https://files.catbox.moe/2kgddw.png'; // Obstacle sprite
+const backgroundImage = new Image();
+backgroundImage.src = 'https://files.catbox.moe/fmi8rl.jpeg'; // Background image
 
 // Add touch event listeners
 canvas.addEventListener('touchstart', handleTouch);
@@ -120,7 +122,11 @@ function updateObjects() {
   });
 }
 
-// Draw game objects
+// Draw functions
+function drawBackground() {
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+}
+
 function drawPlayer() {
   ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
 }
@@ -153,6 +159,7 @@ function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (!gameOver) {
+    drawBackground(); // Draw background first
     updatePlayer();
     updateObjects();
     drawPlayer();
@@ -165,6 +172,7 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
   } else {
+    drawBackground(); // Draw background even on game over
     drawGameOver();
   }
 }
