@@ -35,10 +35,10 @@ body {
 /* Bubble and Bomb Styling */
 .bubble, .bomb {
   position: absolute;
-  top: -80px;
+  top: -100px; /* Start just above the game area */
   border-radius: 50%;
   cursor: pointer;
-  animation: fallDown 5s linear infinite, bubbleWobble 2s ease-in-out infinite;
+  animation: fallDown 6s linear infinite, bubbleWobble 2s ease-in-out infinite;
 }
 
 /* Lifelike Bubble */
@@ -65,10 +65,10 @@ body {
 /* Falling Animation */
 @keyframes fallDown {
   from {
-    transform: translateY(-100%);
+    top: -100px; /* Start above the game area */
   }
   to {
-    transform: translateY(100%);
+    top: 100%; /* End at the bottom of the game area */
   }
 }
 
