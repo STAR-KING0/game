@@ -24,19 +24,25 @@ heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite
 const obstacleImage = new Image();
 obstacleImage.src = 'https://files.catbox.moe/j4mdih.png'; // Obstacle sprite
 
-// Listen for key presses
+// Throttling keydown events to reduce blocking
+let lastKeyPressTime = 0;
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft') keys.left = true;
-  if (e.key === 'ArrowRight') keys.right = true;
-  if (e.key === 'ArrowUp') keys.up = true;
-  if (e.key === 'ArrowDown') keys.down = true;
-});
+  const now = performance.now();
+  if (now - lastKeyPressTime > 50) { // Limit to 20 times per second
+    lastKeyPressTime = now;
+    if (e.key === 'ArrowLeft') keys.left = true;
+    if (e.key === 'ArrowRight') keys.right = true;
+    if (e.key === 'ArrowUp') keys.up = true;
+    if (e.key === 'ArrowDown') keys.down = true;
+  }
+}, { passive: true });
+
 document.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowLeft') keys.left = false;
   if (e.key === 'ArrowRight') keys.right = false;
   if (e.key === 'ArrowUp') keys.up = false;
   if (e.key === 'ArrowDown') keys.down = false;
-});
+}, { passive: true });
 
 // Heart and obstacle creation
 function createHeart() {
@@ -88,7 +94,7 @@ function updateObjects() {
       // Increase level every 10 points
       if (score % 10 === 0) {
         level++;
-        alert(`You've reached Level ${level}! Akari is impressed!`);
+        notifyLevelUp(level);
       }
     }
   });
@@ -111,6 +117,23 @@ function updateObjects() {
       obstacles.splice(index, 1);
     }
   });
+}
+
+// Notification for level-up
+function notifyLevelUp(level) {
+  const notification = document.createElement('div');
+  notification.textContent = `Level ${level}! Akari is impressed!`;
+  notification.style.position = 'absolute';
+  notification.style.top = '10px';
+  notification.style.left = '10px';
+  notification.style.padding = '10px';
+  notification.style.backgroundColor = '#ffdf00';
+  notification.style.border = '1px solid black';
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 2000); // Auto-remove after 2 seconds
 }
 
 // Draw game objects
