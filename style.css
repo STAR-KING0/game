@@ -38,7 +38,7 @@ body {
   top: -100px; /* Start just above the game area */
   border-radius: 50%;
   cursor: pointer;
-  animation: fallDown 6s linear infinite, bubbleWobble 2s ease-in-out infinite;
+  animation: fallDown 4s linear forwards; /* Fall once */
 }
 
 /* Lifelike Bubble */
@@ -54,12 +54,6 @@ body {
   background: radial-gradient(circle, #ff6347, #8b0000);
   box-shadow: inset -5px -5px 10px rgba(255, 0, 0, 0.7),
               0 4px 10px rgba(255, 0, 0, 0.5);
-}
-
-/* Bubble Wobble Effect */
-@keyframes bubbleWobble {
-  0%, 100% { transform: scale(1) translateX(0); }
-  50% { transform: scale(1.05) translateX(5px); }
 }
 
 /* Falling Animation */
