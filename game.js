@@ -16,13 +16,13 @@ let gameOver = false;
 // Controls
 const keys = { left: false, right: false, up: false, down: false };
 
-// Load images
+// Load images (stored in the `public/images` folder)
 const playerImage = new Image();
-playerImage.src = 'https://i.imgur.com/OtqhjLI.png'; // Akari sprite
+playerImage.src = '/images/akari.png'; // Akari sprite located in public/images
 const heartImage = new Image();
-heartImage.src = 'https://i.imgur.com/B0glKQr.png'; // Heart sprite
+heartImage.src = '/images/heart.png'; // Heart sprite located in public/images
 const obstacleImage = new Image();
-obstacleImage.src = 'https://i.imgur.com/Tq6VuYW.png'; // Obstacle sprite
+obstacleImage.src = '/images/obstacle.png'; // Obstacle sprite located in public/images
 
 // Listen for key presses
 document.addEventListener('keydown', (e) => {
