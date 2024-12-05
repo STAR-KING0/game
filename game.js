@@ -18,11 +18,11 @@ const keys = { left: false, right: false, up: false, down: false };
 
 // Load images (stored in the `public/images` folder)
 const playerImage = new Image();
-playerImage.src = './public/images/akari.png'; // Akari sprite located in public/images
+playerImage.src = 'https://files.catbox.moe/gkgthk.png'; // Akari sprite located in public/images
 const heartImage = new Image();
-heartImage.src = './public/images/heart.png'; // Heart sprite located in public/images
+heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite located in public/images
 const obstacleImage = new Image();
-obstacleImage.src = './public/images/obstacle.png'; // Obstacle sprite located in public/images
+obstacleImage.src = 'https://files.catbox.moe/j4mdih.png'; // Obstacle sprite located in public/images
 
 // Listen for key presses
 document.addEventListener('keydown', (e) => {
