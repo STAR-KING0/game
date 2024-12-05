@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bubble Popping Game</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Doodle Jump Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <h1>Bubble Popping Game</h1>
-  <p>Score: <span id="score">0</span></p>
-  <div id="gameArea"></div>
+  <canvas id="gameCanvas"></canvas>
   <script src="game.js"></script>
 </body>
 </html>
