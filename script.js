@@ -1,12 +1,33 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Set canvas size based on screen dimensions
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// Set the canvas size to fit Android view
+function resizeCanvas() {
+  const maxWidth = 800;  // Max width for the canvas
+  const maxHeight = 400; // Max height for the canvas
+  
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+
+  // Scale the canvas to fit within screen size, while maintaining a 2:1 aspect ratio (800x400)
+  let width = Math.min(screenWidth, maxWidth);
+  let height = width * (maxHeight / maxWidth);
+
+  // If height exceeds screen, adjust it
+  if (height > screenHeight) {
+    height = screenHeight;
+    width = height * (maxWidth / maxHeight);
+  }
+
+  // Apply calculated width and height to canvas
+  canvas.width = width;
+  canvas.height = height;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas); // Adjust on resize
 
 // Game variables
-let player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 }; // Adjusted to start near bottom of screen
+let player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 };
 let hearts = [];
 let obstacles = [];
 let score = 0;
@@ -58,7 +79,7 @@ function createObstacle() {
     y: Math.random() * canvas.height / 2,
     width: 30,
     height: 30,
-    speed: 2 + Math.random() * 2 * level, // Increase speed with levels
+    speed: 2 + Math.random() * 2 * level,
   });
 }
 
