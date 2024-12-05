@@ -1,12 +1,12 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Canvas dimensions
-canvas.width = 800;
-canvas.height = 400;
+// Set canvas size based on screen dimensions
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 // Game variables
-let player = { x: 50, y: 350, width: 50, height: 50, speed: 7 }; // Increased speed
+let player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 }; // Adjusted to start near bottom of screen
 let hearts = [];
 let obstacles = [];
 let score = 0;
@@ -157,7 +157,7 @@ function drawGameOver() {
 
 // Function to reset game variables
 function resetGame() {
-  player = { x: 50, y: 350, width: 50, height: 50, speed: 7 };
+  player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 };
   hearts = [];
   obstacles = [];
   score = 0;
