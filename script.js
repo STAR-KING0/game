@@ -16,22 +16,13 @@ let gameOver = false;
 // Touch target variables
 let touchTarget = null;
 
-// Sprite animation variables
-const SPRITE_WIDTH = 50;  // Width of a single frame in the sprite sheet
-const SPRITE_HEIGHT = 50; // Height of a single frame in the sprite sheet
-let frameX = 0;           // Current frame on the X-axis
-let frameY = 0;           // Current animation row (e.g., for direction)
-let frameCount = 6;       // Number of frames in the sprite sheet row
-let animationSpeed = 5;   // Frame change speed
-let frameDelay = 0;       // Counter for animation speed control
-
 // Load images
 const playerImage = new Image();
-playerImage.src = 'https://files.catbox.moe/gkgthk.png'; // Akari sprite sheet
+playerImage.src = 'https://files.catbox.moe/ea7tfh.png'; // Akari sprite
 const heartImage = new Image();
 heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite
 const obstacleImage = new Image();
-obstacleImage.src = 'https://files.catbox.moe/j4mdih.png'; // Obstacle sprite
+obstacleImage.src = 'https://files.catbox.moe/2kgddw.png'; // Obstacle sprite
 
 // Add touch event listeners
 canvas.addEventListener('touchstart', handleTouch);
@@ -79,13 +70,6 @@ function updatePlayer() {
     if (distance > player.speed) {
       player.x += (dx / distance) * player.speed;
       player.y += (dy / distance) * player.speed;
-
-      // Set animation direction based on movement
-      if (Math.abs(dx) > Math.abs(dy)) {
-        frameY = dx > 0 ? 2 : 1; // Right or Left row in sprite sheet
-      } else {
-        frameY = dy > 0 ? 0 : 3; // Down or Up row in sprite sheet
-      }
     } else {
       player.x = touchTarget.x - player.width / 2;
       player.y = touchTarget.y - player.height / 2;
@@ -138,24 +122,7 @@ function updateObjects() {
 
 // Draw game objects
 function drawPlayer() {
-  // Update animation frame
-  if (frameDelay++ > animationSpeed) {
-    frameX = (frameX + 1) % frameCount; // Loop through frames
-    frameDelay = 0;
-  }
-
-  // Draw current frame
-  ctx.drawImage(
-    playerImage,
-    frameX * SPRITE_WIDTH, // Source X
-    frameY * SPRITE_HEIGHT, // Source Y
-    SPRITE_WIDTH,
-    SPRITE_HEIGHT,
-    player.x,
-    player.y,
-    player.width,
-    player.height
-  );
+  ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
 }
 
 function drawHearts() {
