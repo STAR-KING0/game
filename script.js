@@ -152,7 +152,25 @@ function drawGameOver() {
   ctx.font = '40px Arial';
   ctx.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
   ctx.fillText(`Final Score: ${score}`, canvas.width / 2 - 120, canvas.height / 2 + 50);
+  document.getElementById('restartButton').style.display = 'block'; // Show the restart button
 }
+
+// Function to reset game variables
+function resetGame() {
+  player = { x: 50, y: 350, width: 50, height: 50, speed: 7 };
+  hearts = [];
+  obstacles = [];
+  score = 0;
+  level = 1;
+  gameOver = false;
+  document.getElementById('score').textContent = `Score: ${score}`;
+  document.getElementById('level').textContent = `Level: ${level}`;
+  document.getElementById('restartButton').style.display = 'none'; // Hide the restart button
+  gameLoop(); // Start the game again
+}
+
+// Event listener for restart button
+document.getElementById('restartButton').addEventListener('click', resetGame);
 
 // Game loop
 function gameLoop() {
