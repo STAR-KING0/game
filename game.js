@@ -16,13 +16,13 @@ let gameOver = false;
 // Controls
 const keys = { left: false, right: false, up: false, down: false };
 
-// Load images (stored in the `public/images` folder)
+// Load images directly from URLs
 const playerImage = new Image();
-playerImage.src = 'https://files.catbox.moe/gkgthk.png'; // Akari sprite located in public/images
+playerImage.src = 'https://files.catbox.moe/gkgthk.png'; // Akari sprite
 const heartImage = new Image();
-heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite located in public/images
+heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite
 const obstacleImage = new Image();
-obstacleImage.src = 'https://files.catbox.moe/j4mdih.png'; // Obstacle sprite located in public/images
+obstacleImage.src = 'https://files.catbox.moe/j4mdih.png'; // Obstacle sprite
 
 // Listen for key presses
 document.addEventListener('keydown', (e) => {
