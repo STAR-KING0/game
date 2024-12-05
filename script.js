@@ -20,11 +20,11 @@ let touchTarget = null;
 const playerImage = new Image();
 playerImage.src = 'https://files.catbox.moe/ea7tfh.png'; // Akari sprite
 const heartImage = new Image();
-heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite
+heartImage.src = 'https://files.catbox.moe/uy48ql.png'; // Heart sprite
 const obstacleImage = new Image();
 obstacleImage.src = 'https://files.catbox.moe/2kgddw.png'; // Obstacle sprite
 const backgroundImage = new Image();
-backgroundImage.src = 'https://files.catbox.moe/fmi8rl.jpeg'; // Background image
+backgroundImage.src = 'https://files.catbox.moe/rfkk9n.jpeg'; // Background image
 
 // Add touch event listeners
 canvas.addEventListener('touchstart', handleTouch);
