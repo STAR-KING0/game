@@ -7,10 +7,11 @@ body {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb);
-  background-size: 200% 200%;
-  animation: gradientFlow 6s ease infinite;
+  background-size: 150% 150%; /* Reduced size for better performance */
+  animation: gradientFlow 10s ease infinite; /* Slower animation */
   font-family: 'Arial', sans-serif;
   color: white;
+  overflow: hidden; /* Prevent unwanted scrollbars */
 }
 
 /* Gradient Animation */
@@ -35,11 +36,11 @@ body {
 /* Bubble and Bomb Styling */
 .bubble, .bomb {
   position: absolute;
-  top: -100px; /* Start just above the game area */
+  top: -100px;
   border-radius: 50%;
   cursor: pointer;
   will-change: transform, opacity; /* Optimizing animation */
-  animation: fallDown 6s linear infinite, bubbleWobble 2s ease-in-out infinite;
+  animation: fallDown 6s linear, bubbleWobble 2s ease-in-out infinite;
 }
 
 /* Lifelike Bubble */
@@ -65,12 +66,8 @@ body {
 
 /* Falling Animation */
 @keyframes fallDown {
-  from {
-    transform: translateY(-100px); /* Use translateY for smoother animations */
-  }
-  to {
-    transform: translateY(100%); /* Use translateY instead of top */
-  }
+  from { transform: translateY(-100px); }
+  to { transform: translateY(100%); }
 }
 
 /* Text Styling */
