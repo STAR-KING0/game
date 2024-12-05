@@ -6,7 +6,7 @@ canvas.width = 800;
 canvas.height = 400;
 
 // Game variables
-let player = { x: 50, y: 350, width: 50, height: 50, speed: 5 };
+let player = { x: 50, y: 350, width: 50, height: 50, speed: 7 }; // Increased speed
 let hearts = [];
 let obstacles = [];
 let score = 0;
@@ -16,9 +16,18 @@ let gameOver = false;
 // Touch target variables
 let touchTarget = null;
 
+// Sprite animation variables
+const SPRITE_WIDTH = 50;  // Width of a single frame in the sprite sheet
+const SPRITE_HEIGHT = 50; // Height of a single frame in the sprite sheet
+let frameX = 0;           // Current frame on the X-axis
+let frameY = 0;           // Current animation row (e.g., for direction)
+let frameCount = 6;       // Number of frames in the sprite sheet row
+let animationSpeed = 5;   // Frame change speed
+let frameDelay = 0;       // Counter for animation speed control
+
 // Load images
 const playerImage = new Image();
-playerImage.src = 'https://files.catbox.moe/gkgthk.png'; // Akari sprite
+playerImage.src = 'https://files.catbox.moe/gkgthk.png'; // Akari sprite sheet
 const heartImage = new Image();
 heartImage.src = 'https://files.catbox.moe/yriu1r.png'; // Heart sprite
 const obstacleImage = new Image();
@@ -63,7 +72,6 @@ function createObstacle() {
 // Update player position
 function updatePlayer() {
   if (touchTarget) {
-    // Move towards the touch target
     const dx = touchTarget.x - (player.x + player.width / 2);
     const dy = touchTarget.y - (player.y + player.height / 2);
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -71,6 +79,13 @@ function updatePlayer() {
     if (distance > player.speed) {
       player.x += (dx / distance) * player.speed;
       player.y += (dy / distance) * player.speed;
+
+      // Set animation direction based on movement
+      if (Math.abs(dx) > Math.abs(dy)) {
+        frameY = dx > 0 ? 2 : 1; // Right or Left row in sprite sheet
+      } else {
+        frameY = dy > 0 ? 0 : 3; // Down or Up row in sprite sheet
+      }
     } else {
       player.x = touchTarget.x - player.width / 2;
       player.y = touchTarget.y - player.height / 2;
@@ -123,7 +138,24 @@ function updateObjects() {
 
 // Draw game objects
 function drawPlayer() {
-  ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+  // Update animation frame
+  if (frameDelay++ > animationSpeed) {
+    frameX = (frameX + 1) % frameCount; // Loop through frames
+    frameDelay = 0;
+  }
+
+  // Draw current frame
+  ctx.drawImage(
+    playerImage,
+    frameX * SPRITE_WIDTH, // Source X
+    frameY * SPRITE_HEIGHT, // Source Y
+    SPRITE_WIDTH,
+    SPRITE_HEIGHT,
+    player.x,
+    player.y,
+    player.width,
+    player.height
+  );
 }
 
 function drawHearts() {
