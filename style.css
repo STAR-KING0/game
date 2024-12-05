@@ -38,7 +38,8 @@ body {
   top: -100px; /* Start just above the game area */
   border-radius: 50%;
   cursor: pointer;
-  animation: fallDown 4s linear forwards; /* Fall once */
+  will-change: transform, opacity; /* Optimizing animation */
+  animation: fallDown 6s linear infinite, bubbleWobble 2s ease-in-out infinite;
 }
 
 /* Lifelike Bubble */
@@ -56,13 +57,19 @@ body {
               0 4px 10px rgba(255, 0, 0, 0.5);
 }
 
+/* Bubble Wobble Effect */
+@keyframes bubbleWobble {
+  0%, 100% { transform: scale(1) translateX(0); }
+  50% { transform: scale(1.05) translateX(5px); }
+}
+
 /* Falling Animation */
 @keyframes fallDown {
   from {
-    top: -100px; /* Start above the game area */
+    transform: translateY(-100px); /* Use translateY for smoother animations */
   }
   to {
-    top: 100%; /* End at the bottom of the game area */
+    transform: translateY(100%); /* Use translateY instead of top */
   }
 }
 
