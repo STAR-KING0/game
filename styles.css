@@ -1,0 +1,43 @@
+/* General body styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #a1c4fd, #c2e9fb);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Game container */
+#game-container {
+  text-align: center;
+  background: white;
+  border: 5px solid #333;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 850px;
+}
+
+/* Canvas styling */
+#gameCanvas {
+  display: block;
+  margin: 10px auto;
+  background: url('https://files.catbox.moe/75c82n.jpg') center / cover;
+  border: 2px solid #333;
+  border-radius: 10px;
+}
+
+/* Score panel */
+#score-panel {
+  margin: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#score-panel span {
+  margin: 0 10px;
+}

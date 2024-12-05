@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Win Akari's Heart - RPG</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-    canvas {
-      display: block;
-      background: linear-gradient(to top, #ffcccc, #ffffff);
-    }
-  </style>
+  <title>Akari's Adventure</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <canvas id="gameCanvas"></canvas>
-  <script src="game.js"></script>
+  <div id="game-container">
+    <h1>Akari's Adventure</h1>
+    <canvas id="gameCanvas"></canvas>
+    <div id="score-panel">
+      <span id="score">Score: 0</span>
+      <span id="level">Level: 1</span>
+    </div>
+    <p>Use Arrow Keys to move Akari!</p>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
