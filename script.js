@@ -169,6 +169,10 @@ function drawBackground() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 }
 
+function drawPlayer() {
+  ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+}
+
 function drawHealthBar() {
   const barWidth = 200;
   const barHeight = 20;
@@ -236,6 +240,13 @@ function gameLoop() {
   }
 }
 
-// Start game
-backgroundMusic.play();
-gameLoop();
+// Start game on interaction
+window.onload = () => {
+  resizeCanvas();
+  backgroundImage.onload = () => {
+    document.body.addEventListener('click', () => {
+      backgroundMusic.play();
+      gameLoop();
+    });
+  };
+};
