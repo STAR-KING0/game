@@ -49,13 +49,6 @@ powerUpImage.src = 'https://files.catbox.moe/4ntnjp.png';
 const backgroundImage = new Image();
 backgroundImage.src = 'https://files.catbox.moe/rfkk9n.jpeg';
 
-// Load sounds
-const heartSound = new Audio('https://files.catbox.moe/ygqrcb.mp3');
-const powerUpSound = new Audio('https://files.catbox.moe/yuulgv.mp3');
-const backgroundMusic = new Audio('https://files.catbox.moe/a8bwj4.mp3');
-backgroundMusic.loop = true;
-backgroundMusic.volume = 0.5;
-
 // Event listeners
 canvas.addEventListener('touchstart', handleTouch);
 canvas.addEventListener('touchmove', handleTouch);
@@ -122,7 +115,6 @@ function updateObjects() {
     if (checkCollision(player, heart)) {
       hearts.splice(i, 1);
       score++;
-      heartSound.play();
       createParticles(heart.x + 15, heart.y + 15, 'red');
       if (score % 10 === 0) level++;
     }
@@ -143,7 +135,6 @@ function updateObjects() {
     if (checkCollision(player, powerUp)) {
       health = Math.min(100, health + 30);
       powerUps.splice(i, 1);
-      powerUpSound.play();
       createParticles(powerUp.x + 15, powerUp.y + 15, 'yellow');
     }
   });
@@ -211,7 +202,6 @@ function resetGame() {
   health = 100;
   gameOver = false;
   document.getElementById('restartButton').style.display = 'none';
-  backgroundMusic.play();
   gameLoop();
 }
 
@@ -236,16 +226,14 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
   } else {
     drawGameOver();
-    backgroundMusic.pause();
   }
 }
 
-// Start game on interaction
+// Start game
 window.onload = () => {
   resizeCanvas();
   backgroundImage.onload = () => {
     document.body.addEventListener('click', () => {
-      backgroundMusic.play();
       gameLoop();
     });
   };
