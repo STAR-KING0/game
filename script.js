@@ -3,37 +3,37 @@ const ctx = canvas.getContext('2d');
 
 // Set the canvas size to fit Android view
 function resizeCanvas() {
-  const maxWidth = 800;  // Max width for the canvas
+  const maxWidth = 800; // Max width for the canvas
   const maxHeight = 400; // Max height for the canvas
   
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
 
-  // Scale the canvas to fit within screen size, while maintaining a 2:1 aspect ratio (800x400)
   let width = Math.min(screenWidth, maxWidth);
   let height = width * (maxHeight / maxWidth);
 
-  // If height exceeds screen, adjust it
   if (height > screenHeight) {
     height = screenHeight;
     width = height * (maxWidth / maxHeight);
   }
 
-  // Apply calculated width and height to canvas
   canvas.width = width;
   canvas.height = height;
 }
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas); // Adjust on resize
+window.addEventListener('resize', resizeCanvas);
 
 // Game variables
 let player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 };
 let hearts = [];
 let obstacles = [];
+let powerUps = [];
 let score = 0;
 let level = 1;
 let gameOver = false;
-let health = 100; // Player's initial health
+let health = 100;
+let powerUpActive = false;
+let powerUpTimer = 0;
 
 // Touch target variables
 let touchTarget = null;
@@ -47,12 +47,14 @@ const obstacleImage = new Image();
 obstacleImage.src = 'https://files.catbox.moe/2kgddw.png'; // Obstacle sprite
 const backgroundImage = new Image();
 backgroundImage.src = 'https://files.catbox.moe/rfkk9n.jpeg'; // Background image
+const powerUpImage = new Image();
+powerUpImage.src = 'https://files.catbox.moe/4ntnjp.png'; // Power-up sprite
 
 // Add touch event listeners
 canvas.addEventListener('touchstart', handleTouch);
 canvas.addEventListener('touchmove', handleTouch);
 canvas.addEventListener('touchend', () => {
-  touchTarget = null; // Stop moving when touch ends
+  touchTarget = null;
 });
 
 function handleTouch(event) {
@@ -64,7 +66,7 @@ function handleTouch(event) {
   };
 }
 
-// Heart and obstacle creation
+// Object creation functions
 function createHeart() {
   hearts.push({
     x: Math.random() * canvas.width,
@@ -84,7 +86,16 @@ function createObstacle() {
   });
 }
 
-// Update player position
+function createPowerUp() {
+  powerUps.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height / 2,
+    width: 30,
+    height: 30,
+  });
+}
+
+// Update functions
 function updatePlayer() {
   if (touchTarget) {
     const dx = touchTarget.x - (player.x + player.width / 2);
@@ -107,7 +118,6 @@ function updatePlayer() {
   if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
 }
 
-// Update hearts and obstacles
 function updateObjects() {
   hearts.forEach((heart, index) => {
     if (
@@ -118,11 +128,7 @@ function updateObjects() {
     ) {
       hearts.splice(index, 1);
       score++;
-
-      if (score % 10 === 0) {
-        level++;
-        document.getElementById('level').textContent = `Level: ${level}`;
-      }
+      if (score % 10 === 0) level++;
     }
   });
 
@@ -130,23 +136,45 @@ function updateObjects() {
     obstacle.y += obstacle.speed;
 
     if (
+      !powerUpActive && // Only damage if not invincible
       player.x < obstacle.x + obstacle.width &&
       player.x + player.width > obstacle.x &&
       player.y < obstacle.y + obstacle.height &&
       player.y + player.height > obstacle.y
     ) {
-      health -= 20; // Decrease health by 20 on collision
+      health -= 20;
       obstacles.splice(index, 1);
 
-      if (health <= 0) {
-        gameOver = true;
-      }
+      if (health <= 0) gameOver = true;
     }
 
-    if (obstacle.y > canvas.height) {
-      obstacles.splice(index, 1);
+    if (obstacle.y > canvas.height) obstacles.splice(index, 1);
+  });
+
+  powerUps.forEach((powerUp, index) => {
+    if (
+      player.x < powerUp.x + powerUp.width &&
+      player.x + player.width > powerUp.x &&
+      player.y < powerUp.y + powerUp.height &&
+      player.y + player.height > powerUp.y
+    ) {
+      powerUps.splice(index, 1);
+      activatePowerUp();
     }
   });
+}
+
+function activatePowerUp() {
+  health = 100; // Restore full health
+  powerUpActive = true;
+  powerUpTimer = 300; // Invincibility lasts for ~5 seconds
+}
+
+function managePowerUpEffect() {
+  if (powerUpActive) {
+    powerUpTimer--;
+    if (powerUpTimer <= 0) powerUpActive = false;
+  }
 }
 
 // Draw functions
@@ -170,8 +198,10 @@ function drawObstacles() {
   });
 }
 
-function drawScore() {
-  document.getElementById('score').textContent = `Score: ${score}`;
+function drawPowerUps() {
+  powerUps.forEach((powerUp) => {
+    ctx.drawImage(powerUpImage, powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+  });
 }
 
 function drawHealthBar() {
@@ -180,18 +210,21 @@ function drawHealthBar() {
   const barX = 10;
   const barY = 10;
 
-  // Background bar
   ctx.fillStyle = 'red';
   ctx.fillRect(barX, barY, barWidth, barHeight);
 
-  // Foreground bar (remaining health)
   ctx.fillStyle = 'green';
   ctx.fillRect(barX, barY, (health / 100) * barWidth, barHeight);
 
-  // Text overlay
   ctx.fillStyle = 'white';
   ctx.font = '16px Arial';
-  ctx.fillText(`Health: ${health}`, barX + barWidth / 2 - 40, barY + 15);
+  ctx.fillText(`Health: ${health}`, barX + 50, barY + 15);
+}
+
+function drawScore() {
+  ctx.fillStyle = 'white';
+  ctx.font = '20px Arial';
+  ctx.fillText(`Score: ${score}`, 10, canvas.height - 20);
 }
 
 function drawGameOver() {
@@ -199,47 +232,46 @@ function drawGameOver() {
   ctx.font = '40px Arial';
   ctx.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
   ctx.fillText(`Final Score: ${score}`, canvas.width / 2 - 120, canvas.height / 2 + 50);
-  document.getElementById('restartButton').style.display = 'block'; // Show the restart button
+  document.getElementById('restartButton').style.display = 'block';
 }
 
-// Function to reset game variables
+// Reset game
 function resetGame() {
   player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 };
   hearts = [];
   obstacles = [];
+  powerUps = [];
   score = 0;
   level = 1;
-  health = 100; // Reset health
+  health = 100;
+  powerUpActive = false;
   gameOver = false;
-  document.getElementById('score').textContent = `Score: ${score}`;
-  document.getElementById('level').textContent = `Level: ${level}`;
-  document.getElementById('restartButton').style.display = 'none'; // Hide the restart button
-  gameLoop(); // Start the game again
+  gameLoop();
 }
-
-// Event listener for restart button
-document.getElementById('restartButton').addEventListener('click', resetGame);
 
 // Game loop
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (!gameOver) {
-    drawBackground(); // Draw background first
+    drawBackground();
     updatePlayer();
     updateObjects();
+    managePowerUpEffect();
     drawPlayer();
     drawHearts();
     drawObstacles();
-    drawHealthBar(); // Draw health bar
+    drawPowerUps();
+    drawHealthBar();
     drawScore();
 
     if (Math.random() < 0.01) createHeart();
     if (Math.random() < 0.02 + level * 0.01) createObstacle();
+    if (Math.random() < 0.005) createPowerUp();
 
     requestAnimationFrame(gameLoop);
   } else {
-    drawBackground(); // Draw background even on game over
+    drawBackground();
     drawGameOver();
   }
 }
