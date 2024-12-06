@@ -1,95 +1,90 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Resize Canvas
+// Set the canvas size to fit Android view
 function resizeCanvas() {
-  const maxWidth = 800;
-  const maxHeight = 400;
-
+  const maxWidth = 800;  // Max width for the canvas
+  const maxHeight = 400; // Max height for the canvas
+  
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
 
+  // Scale the canvas to fit within screen size, while maintaining a 2:1 aspect ratio (800x400)
   let width = Math.min(screenWidth, maxWidth);
   let height = width * (maxHeight / maxWidth);
 
+  // If height exceeds screen, adjust it
   if (height > screenHeight) {
     height = screenHeight;
     width = height * (maxWidth / maxHeight);
   }
 
+  // Apply calculated width and height to canvas
   canvas.width = width;
   canvas.height = height;
 }
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', resizeCanvas); // Adjust on resize
 
 // Game variables
 let player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 };
 let hearts = [];
 let obstacles = [];
-let powerUps = [];
-let particles = [];
 let score = 0;
 let level = 1;
 let gameOver = false;
-let health = 100;
+let health = 100; // Player's initial health
 
-// Touch control
+// Touch target variables
 let touchTarget = null;
 
 // Load images
 const playerImage = new Image();
-playerImage.src = 'https://files.catbox.moe/ea7tfh.png';
+playerImage.src = 'https://files.catbox.moe/ea7tfh.png'; // Akari sprite
 const heartImage = new Image();
-heartImage.src = 'https://files.catbox.moe/uy48ql.png';
+heartImage.src = 'https://files.catbox.moe/uy48ql.png'; // Heart sprite
 const obstacleImage = new Image();
-obstacleImage.src = 'https://files.catbox.moe/2kgddw.png';
-const powerUpImage = new Image();
-powerUpImage.src = 'https://files.catbox.moe/4ntnjp.png';
+obstacleImage.src = 'https://files.catbox.moe/2kgddw.png'; // Obstacle sprite
 const backgroundImage = new Image();
-backgroundImage.src = 'https://files.catbox.moe/rfkk9n.jpeg';
+backgroundImage.src = 'https://files.catbox.moe/rfkk9n.jpeg'; // Background image
 
-// Event listeners
+// Add touch event listeners
 canvas.addEventListener('touchstart', handleTouch);
 canvas.addEventListener('touchmove', handleTouch);
-canvas.addEventListener('touchend', () => (touchTarget = null));
-document.getElementById('restartButton').addEventListener('click', resetGame);
+canvas.addEventListener('touchend', () => {
+  touchTarget = null; // Stop moving when touch ends
+});
 
 function handleTouch(event) {
   const touch = event.touches[0];
   const rect = canvas.getBoundingClientRect();
-  touchTarget = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+  touchTarget = {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top,
+  };
 }
 
-// Create objects
+// Heart and obstacle creation
 function createHeart() {
-  hearts.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height / 2, width: 30, height: 30 });
+  hearts.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height / 2,
+    width: 30,
+    height: 30,
+  });
 }
 
 function createObstacle() {
-  obstacles.push({ x: Math.random() * canvas.width, y: -50, width: 30, height: 30, speed: 2 + Math.random() * level });
+  obstacles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height / 2,
+    width: 30,
+    height: 30,
+    speed: 2 + Math.random() * 2 * level,
+  });
 }
 
-function createPowerUp() {
-  powerUps.push({ x: Math.random() * canvas.width, y: -50, width: 30, height: 30, speed: 3 });
-}
-
-// Create particles
-function createParticles(x, y, color) {
-  for (let i = 0; i < 10; i++) {
-    particles.push({
-      x,
-      y,
-      size: Math.random() * 5,
-      speedX: Math.random() * 4 - 2,
-      speedY: Math.random() * 4 - 2,
-      color,
-      life: 50,
-    });
-  }
-}
-
-// Update player
+// Update player position
 function updatePlayer() {
   if (touchTarget) {
     const dx = touchTarget.x - (player.x + player.width / 2);
@@ -105,54 +100,53 @@ function updatePlayer() {
     }
   }
 
-  player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
-  player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
+  // Boundary check
+  if (player.x < 0) player.x = 0;
+  if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+  if (player.y < 0) player.y = 0;
+  if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
 }
 
-// Update objects
+// Update hearts and obstacles
 function updateObjects() {
-  hearts.forEach((heart, i) => {
-    if (checkCollision(player, heart)) {
-      hearts.splice(i, 1);
+  hearts.forEach((heart, index) => {
+    if (
+      player.x < heart.x + heart.width &&
+      player.x + player.width > heart.x &&
+      player.y < heart.y + heart.height &&
+      player.y + player.height > heart.y
+    ) {
+      hearts.splice(index, 1);
       score++;
-      createParticles(heart.x + 15, heart.y + 15, 'red');
-      if (score % 10 === 0) level++;
+
+      if (score % 10 === 0) {
+        level++;
+        document.getElementById('level').textContent = `Level: ${level}`;
+      }
     }
   });
 
-  obstacles.forEach((obstacle, i) => {
+  obstacles.forEach((obstacle, index) => {
     obstacle.y += obstacle.speed;
-    if (checkCollision(player, obstacle)) {
-      health -= 20;
-      obstacles.splice(i, 1);
-      createParticles(obstacle.x + 15, obstacle.y + 15, 'black');
-      if (health <= 0) gameOver = true;
+
+    if (
+      player.x < obstacle.x + obstacle.width &&
+      player.x + player.width > obstacle.x &&
+      player.y < obstacle.y + obstacle.height &&
+      player.y + player.height > obstacle.y
+    ) {
+      health -= 20; // Decrease health by 20 on collision
+      obstacles.splice(index, 1);
+
+      if (health <= 0) {
+        gameOver = true;
+      }
+    }
+
+    if (obstacle.y > canvas.height) {
+      obstacles.splice(index, 1);
     }
   });
-
-  powerUps.forEach((powerUp, i) => {
-    powerUp.y += powerUp.speed;
-    if (checkCollision(player, powerUp)) {
-      health = Math.min(100, health + 30);
-      powerUps.splice(i, 1);
-      createParticles(powerUp.x + 15, powerUp.y + 15, 'yellow');
-    }
-  });
-}
-
-// Update particles
-function updateParticles() {
-  particles.forEach((particle, i) => {
-    particle.x += particle.speedX;
-    particle.y += particle.speedY;
-    particle.life--;
-    if (particle.life <= 0) particles.splice(i, 1);
-  });
-}
-
-// Check collision
-function checkCollision(a, b) {
-  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
 
 // Draw functions
@@ -164,77 +158,91 @@ function drawPlayer() {
   ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
 }
 
+function drawHearts() {
+  hearts.forEach((heart) => {
+    ctx.drawImage(heartImage, heart.x, heart.y, heart.width, heart.height);
+  });
+}
+
+function drawObstacles() {
+  obstacles.forEach((obstacle) => {
+    ctx.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+  });
+}
+
+function drawScore() {
+  document.getElementById('score').textContent = `Score: ${score}`;
+}
+
 function drawHealthBar() {
   const barWidth = 200;
   const barHeight = 20;
-  ctx.fillStyle = 'red';
-  ctx.fillRect(10, 10, barWidth, barHeight);
-  ctx.fillStyle = 'green';
-  ctx.fillRect(10, 10, (health / 100) * barWidth, barHeight);
-  ctx.strokeStyle = 'black';
-  ctx.strokeRect(10, 10, barWidth, barHeight);
-}
+  const barX = 10;
+  const barY = 10;
 
-function drawParticles() {
-  particles.forEach((particle) => {
-    ctx.fillStyle = particle.color;
-    ctx.beginPath();
-    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-    ctx.fill();
-  });
+  // Background bar
+  ctx.fillStyle = 'red';
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+
+  // Foreground bar (remaining health)
+  ctx.fillStyle = 'green';
+  ctx.fillRect(barX, barY, (health / 100) * barWidth, barHeight);
+
+  // Text overlay
+  ctx.fillStyle = 'white';
+  ctx.font = '16px Arial';
+  ctx.fillText(`Health: ${health}`, barX + barWidth / 2 - 40, barY + 15);
 }
 
 function drawGameOver() {
   ctx.fillStyle = 'black';
   ctx.font = '40px Arial';
   ctx.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
+  ctx.fillText(`Final Score: ${score}`, canvas.width / 2 - 120, canvas.height / 2 + 50);
+  document.getElementById('restartButton').style.display = 'block'; // Show the restart button
 }
 
-// Reset game
+// Function to reset game variables
 function resetGame() {
   player = { x: 50, y: canvas.height - 100, width: 50, height: 50, speed: 7 };
   hearts = [];
   obstacles = [];
-  powerUps = [];
-  particles = [];
   score = 0;
   level = 1;
-  health = 100;
+  health = 100; // Reset health
   gameOver = false;
-  document.getElementById('restartButton').style.display = 'none';
-  gameLoop();
+  document.getElementById('score').textContent = `Score: ${score}`;
+  document.getElementById('level').textContent = `Level: ${level}`;
+  document.getElementById('restartButton').style.display = 'none'; // Hide the restart button
+  gameLoop(); // Start the game again
 }
+
+// Event listener for restart button
+document.getElementById('restartButton').addEventListener('click', resetGame);
 
 // Game loop
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (!gameOver) {
-    drawBackground();
+    drawBackground(); // Draw background first
     updatePlayer();
     updateObjects();
-    updateParticles();
-
     drawPlayer();
-    drawHealthBar();
-    drawParticles();
+    drawHearts();
+    drawObstacles();
+    drawHealthBar(); // Draw health bar
+    drawScore();
 
     if (Math.random() < 0.01) createHeart();
     if (Math.random() < 0.02 + level * 0.01) createObstacle();
-    if (Math.random() < 0.005) createPowerUp();
 
     requestAnimationFrame(gameLoop);
   } else {
+    drawBackground(); // Draw background even on game over
     drawGameOver();
   }
 }
 
 // Start game
-window.onload = () => {
-  resizeCanvas();
-  backgroundImage.onload = () => {
-    document.body.addEventListener('click', () => {
-      gameLoop();
-    });
-  };
-};
+gameLoop();
