@@ -33,6 +33,7 @@ let obstacles = [];
 let score = 0;
 let level = 1;
 let gameOver = false;
+let health = 100; // Player's initial health
 
 // Touch target variables
 let touchTarget = null;
@@ -134,7 +135,12 @@ function updateObjects() {
       player.y < obstacle.y + obstacle.height &&
       player.y + player.height > obstacle.y
     ) {
-      gameOver = true;
+      health -= 20; // Decrease health by 20 on collision
+      obstacles.splice(index, 1);
+
+      if (health <= 0) {
+        gameOver = true;
+      }
     }
 
     if (obstacle.y > canvas.height) {
@@ -168,6 +174,26 @@ function drawScore() {
   document.getElementById('score').textContent = `Score: ${score}`;
 }
 
+function drawHealthBar() {
+  const barWidth = 200;
+  const barHeight = 20;
+  const barX = 10;
+  const barY = 10;
+
+  // Background bar
+  ctx.fillStyle = 'red';
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+
+  // Foreground bar (remaining health)
+  ctx.fillStyle = 'green';
+  ctx.fillRect(barX, barY, (health / 100) * barWidth, barHeight);
+
+  // Text overlay
+  ctx.fillStyle = 'white';
+  ctx.font = '16px Arial';
+  ctx.fillText(`Health: ${health}`, barX + barWidth / 2 - 40, barY + 15);
+}
+
 function drawGameOver() {
   ctx.fillStyle = 'black';
   ctx.font = '40px Arial';
@@ -183,6 +209,7 @@ function resetGame() {
   obstacles = [];
   score = 0;
   level = 1;
+  health = 100; // Reset health
   gameOver = false;
   document.getElementById('score').textContent = `Score: ${score}`;
   document.getElementById('level').textContent = `Level: ${level}`;
@@ -204,6 +231,7 @@ function gameLoop() {
     drawPlayer();
     drawHearts();
     drawObstacles();
+    drawHealthBar(); // Draw health bar
     drawScore();
 
     if (Math.random() < 0.01) createHeart();
