@@ -51,7 +51,6 @@ backgroundImage.src = 'https://files.catbox.moe/rfkk9n.jpeg';
 
 // Load sounds
 const heartSound = new Audio('https://files.catbox.moe/ygqrcb.mp3');
-const obstacleSound = new Audio('https://files.catbox.moe/obstacle.mp3');
 const powerUpSound = new Audio('https://files.catbox.moe/yuulgv.mp3');
 const backgroundMusic = new Audio('https://files.catbox.moe/a8bwj4.mp3');
 backgroundMusic.loop = true;
@@ -133,7 +132,6 @@ function updateObjects() {
     obstacle.y += obstacle.speed;
     if (checkCollision(player, obstacle)) {
       health -= 20;
-      obstacleSound.play();
       obstacles.splice(i, 1);
       createParticles(obstacle.x + 15, obstacle.y + 15, 'black');
       if (health <= 0) gameOver = true;
